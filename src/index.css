@@ -1,0 +1,157 @@
+@import "tailwindcss";
+
+
+:root {
+  /* Default: Cyber Navy / Arctic Ice */
+  --bg-app: #f4f7fa;
+  --bg-card: rgba(255, 255, 255, 0.85);
+  --bg-card-hover: #ffffff;
+  --bg-input: #ffffff;
+  --bg-input-focus: #ffffff;
+
+  --navy: #0f172a;
+  --navy-light: #2563eb;
+  --navy-dark: #020617;
+  --navy-glow: rgba(37, 99, 235, 0.05);
+
+  --orange: #3b82f6; /* Shifted accent to Electric Cyan Blue */
+  --orange-rgb: 59, 130, 246;
+  --orange-glow: rgba(59, 130, 246, 0.08);
+  --orange-hover: #1d4ed8;
+
+  --green: #059669;
+  --green-glow: rgba(5, 150, 105, 0.08);
+  --red: #dc2626;
+  --red-glow: rgba(220, 38, 38, 0.08);
+  --amber: #d97706;
+  --amber-glow: rgba(217, 119, 6, 0.08);
+
+  --border-glass: rgba(226, 232, 240, 0.8);
+  --border-glass-active: #cbd5e1;
+  
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --font-heading: 'Space Grotesk', sans-serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+}
+
+body.theme-gold {
+  /* Chai Silk & Brushed Brass */
+  --bg-app: #fbf9f4;
+  --bg-card: rgba(255, 255, 255, 0.9);
+  --bg-card-hover: #fafcfb;
+
+  --navy: #2d2926;
+  --navy-light: #8a7355;
+  --navy-dark: #1a1715;
+  --navy-glow: rgba(138, 115, 85, 0.06);
+
+  --orange: #b89765; 
+  --orange-rgb: 184, 151, 101;
+  --orange-glow: rgba(184, 151, 101, 0.1);
+  --orange-hover: #a18050;
+
+  --green: #1b4d3e;
+  --green-glow: rgba(27, 77, 62, 0.06);
+  --red: #7a2222;
+  --red-glow: rgba(122, 34, 34, 0.06);
+  --amber: #b57c1e;
+  --amber-glow: rgba(181, 124, 30, 0.06);
+
+  --border-glass: #ebe5d8;
+  --border-glass-active: #d6ccb9;
+
+  --text-primary: #1c1917;
+  --text-secondary: #57534e;
+  --text-muted: #878580;
+}
+
+body.theme-dark, body.dark {
+  /* Obsidian / Hyper Emerald */
+  --bg-app: #0b0f19;
+  --bg-card: rgba(15, 23, 42, 0.6);
+  --bg-card-hover: #1e293b;
+  --bg-input: #0f172a;
+  --bg-input-focus: #1e293b;
+
+  --navy: #10b981; /* Deep rich emerald accents in Dark Mode */
+  --navy-light: #34d399;
+  --navy-dark: #047857;
+  --navy-glow: rgba(16, 185, 129, 0.1);
+
+  --orange: #06b6d4; 
+  --orange-rgb: 6, 182, 212;
+  --orange-glow: rgba(6, 182, 212, 0.1);
+  --orange-hover: #0891b2;
+
+  --green: #10b981;
+  --green-glow: rgba(16, 185, 129, 0.15);
+  --red: #ef4444;
+  --red-glow: rgba(239, 68, 68, 0.15);
+  --amber: #f59e0b;
+  --amber-glow: rgba(245, 158, 11, 0.15);
+
+  --border-glass: rgba(30, 41, 59, 0.7);
+  --border-glass-active: #475569;
+
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #475569;
+}
+
+@theme {
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+  --font-heading: 'Space Grotesk', sans-serif;
+  
+  --color-brand-app: var(--bg-app);
+  --color-brand-card: var(--bg-card);
+  --color-brand-card-hover: var(--bg-card-hover);
+  --color-brand-input: var(--bg-input);
+  --color-brand-input-focus: var(--bg-input-focus);
+  --color-brand-primary: var(--navy);
+  --color-brand-primary-light: var(--navy-light);
+  --color-brand-primary-dark: var(--navy-dark);
+  --color-brand-accent: var(--orange);
+  --color-brand-accent-hover: var(--orange-hover);
+  --color-brand-border: var(--border-glass);
+  --color-brand-border-active: var(--border-glass-active);
+  --color-brand-text: var(--text-primary);
+  --color-brand-text-secondary: var(--text-secondary);
+  --color-brand-text-muted: var(--text-muted);
+  --color-brand-green: var(--green);
+  --color-brand-red: var(--red);
+  --color-brand-amber: var(--amber);
+}
+
+/* Glassmorphism card default backdrop */
+.glass-panel {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Print: hide dashboard, show quotation document only */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm 14mm;
+  }
+
+  html,
+  body,
+  #root {
+    background: #fff !important;
+    color: #000 !important;
+    min-height: auto !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+}
