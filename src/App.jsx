@@ -75,13 +75,34 @@ export default function App() {
     currency: 'USD',
     preparedBy: 'Sarah Jenkins',
     reviewedBy: 'David Miller',
-    approvedBy: 'Hassan Al-Sayegh'
+    approvedBy: 'Hassan Al-Sayegh',
+    logo: '',
+    printSummaryOnly: false
   });
 
   const [shipmentInfo, setShipmentInfo] = useState(initialSampleData.shipment);
-  const [agentData, setAgentData] = useState(initialSampleData.agent);
+  
+  const [agents, setAgents] = useState([
+    { id: 'agent_1', name: 'Primary Agent', data: initialSampleData.agent }
+  ]);
+  const [selectedAgentId, setSelectedAgentId] = useState('agent_1');
   const [customerData, setCustomerData] = useState(initialSampleData.customer);
   const [activeTab, setActiveTab] = useState('input');
+
+  const activeAgent = agents.find(a => a.id === selectedAgentId) || agents[0];
+  const agentData = activeAgent.data;
+
+  const setAgentData = (newDataOrFunc) => {
+    setAgents((prevAgents) => {
+      return prevAgents.map((agent) => {
+        if (agent.id === selectedAgentId) {
+          const updatedData = typeof newDataOrFunc === 'function' ? newDataOrFunc(agent.data) : newDataOrFunc;
+          return { ...agent, data: updatedData };
+        }
+        return agent;
+      });
+    });
+  };
 
   useEffect(() => {
     setQuotationInfo((prev) => ({
@@ -105,7 +126,9 @@ export default function App() {
       currency: 'USD',
       preparedBy: '',
       reviewedBy: '',
-      approvedBy: ''
+      approvedBy: '',
+      logo: '',
+      printSummaryOnly: false
     });
 
     setShipmentInfo({
@@ -132,7 +155,10 @@ export default function App() {
       other_charges: { exw: '', freight: '', fob: '', other: '' }
     };
 
-    setAgentData(blankChargesTemplate);
+    setAgents([
+      { id: 'agent_1', name: 'Primary Agent', data: blankChargesTemplate }
+    ]);
+    setSelectedAgentId('agent_1');
     setCustomerData(blankChargesTemplate);
     setActiveTab('input');
   };
@@ -184,6 +210,10 @@ export default function App() {
               setAgentData={setAgentData}
               customerData={customerData}
               setCustomerData={setCustomerData}
+              agents={agents}
+              setAgents={setAgents}
+              selectedAgentId={selectedAgentId}
+              setSelectedAgentId={setSelectedAgentId}
             />
           )}
 

@@ -29,14 +29,23 @@ export default function PrintableQuotation({
     <div className="print-only hidden w-full max-w-[210mm] mx-auto bg-white text-zinc-900 font-sans text-[11px] leading-relaxed antialiased">
       {/* Letterhead */}
       <header className="flex justify-between items-start border-b-2 border-zinc-900 pb-4 mb-5">
-        <div>
-          <p className="text-[9px] font-bold tracking-[0.2em] text-zinc-500 uppercase mb-1">Freight Quotation</p>
-          <h1 className="text-2xl font-black tracking-tight uppercase text-zinc-900">
-            Well Reach Logistics
-          </h1>
-          <p className="text-[10px] text-zinc-500 mt-1">
-            GCC Freight Forwarding · Customs Clearance · Warehousing · Intermodal Logistics
-          </p>
+        <div className="flex items-start gap-4">
+          {quotationInfo.logo && (
+            <img
+              src={quotationInfo.logo}
+              alt="Company Logo"
+              className="max-h-16 max-w-[120px] object-contain rounded bg-white p-1 border border-zinc-200"
+            />
+          )}
+          <div>
+            <p className="text-[9px] font-bold tracking-[0.2em] text-zinc-500 uppercase mb-1">Freight Quotation</p>
+            <h1 className="text-2xl font-black tracking-tight uppercase text-zinc-900">
+              Well Reach Logistics
+            </h1>
+            <p className="text-[10px] text-zinc-500 mt-1">
+              GCC Freight Forwarding · Customs Clearance · Warehousing · Intermodal Logistics
+            </p>
+          </div>
         </div>
         <div className="text-right">
           <table className="text-[10px] border-collapse ml-auto">
@@ -134,46 +143,81 @@ export default function PrintableQuotation({
         <h2 className="text-[10px] font-bold tracking-widest text-zinc-700 uppercase mb-2">
           Quoted Charges
         </h2>
-        <table className="w-full border-collapse border border-zinc-300 text-[10px]">
-          <thead>
-            <tr className="bg-zinc-100 text-zinc-700">
-              <th className="border border-zinc-300 p-2 text-left font-bold">Service</th>
-              <th className="border border-zinc-300 p-2 text-right font-bold w-20">EXW</th>
-              <th className="border border-zinc-300 p-2 text-right font-bold w-20">Freight</th>
-              <th className="border border-zinc-300 p-2 text-right font-bold w-20">FOB</th>
-              <th className="border border-zinc-300 p-2 text-right font-bold w-24">Other</th>
-              <th className="border border-zinc-300 p-2 text-right font-bold w-28">Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {lineItems.length > 0 ? (
-              lineItems.map(({ id, label, row, total }) => (
-                <tr key={id}>
-                  <td className="border border-zinc-300 p-2 font-semibold text-zinc-800">{label}</td>
-                  <td className="border border-zinc-300 p-2 text-right font-mono">{formatCell(row.exw)}</td>
-                  <td className="border border-zinc-300 p-2 text-right font-mono">{formatCell(row.freight)}</td>
-                  <td className="border border-zinc-300 p-2 text-right font-mono">{formatCell(row.fob)}</td>
-                  <td className="border border-zinc-300 p-2 text-right font-mono">{formatCell(row.other)}</td>
-                  <td className="border border-zinc-300 p-2 text-right font-mono font-bold">{formatCurrency(total, currency)}</td>
+        {quotationInfo.printSummaryOnly ? (
+          <table className="w-full border-collapse border border-zinc-300 text-[10px]">
+            <thead>
+              <tr className="bg-zinc-100 text-zinc-700">
+                <th className="border border-zinc-300 p-2 text-left font-bold">Services & Scope Offered</th>
+                <th className="border border-zinc-300 p-2 text-right font-bold w-32">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {lineItems.length > 0 ? (
+                lineItems.map(({ id, label }) => (
+                  <tr key={id}>
+                    <td className="border border-zinc-300 p-2 font-semibold text-zinc-800 text-[11px]">{label}</td>
+                    <td className="border border-zinc-300 p-2 text-right text-emerald-600 font-bold uppercase tracking-wider text-[9px]">Included</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={2} className="border border-zinc-300 p-4 text-center text-zinc-400 italic">
+                    No charges entered
+                  </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={6} className="border border-zinc-300 p-4 text-center text-zinc-400 italic">
-                  No charges entered
+              )}
+              <tr className="bg-zinc-900 text-white font-bold">
+                <td className="border border-zinc-900 p-2.5 text-right uppercase tracking-wide text-[10px]">
+                  Total Quotation Amount
+                </td>
+                <td className="border border-zinc-900 p-2.5 text-right font-mono text-xs">
+                  {formatCurrency(totals.grandTotal, currency)}
                 </td>
               </tr>
-            )}
-            <tr className="bg-zinc-900 text-white font-bold">
-              <td colSpan={5} className="border border-zinc-900 p-2.5 text-right uppercase tracking-wide text-[10px]">
-                Grand Total
-              </td>
-              <td className="border border-zinc-900 p-2.5 text-right font-mono text-xs">
-                {formatCurrency(totals.grandTotal, currency)}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+            </tbody>
+          </table>
+        ) : (
+          <table className="w-full border-collapse border border-zinc-300 text-[10px]">
+            <thead>
+              <tr className="bg-zinc-100 text-zinc-700">
+                <th className="border border-zinc-300 p-2 text-left font-bold">Service</th>
+                <th className="border border-zinc-300 p-2 text-right font-bold w-20">EXW</th>
+                <th className="border border-zinc-300 p-2 text-right font-bold w-20">Freight</th>
+                <th className="border border-zinc-300 p-2 text-right font-bold w-20">FOB</th>
+                <th className="border border-zinc-300 p-2 text-right font-bold w-24">Other</th>
+                <th className="border border-zinc-300 p-2 text-right font-bold w-28">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {lineItems.length > 0 ? (
+                lineItems.map(({ id, label, row, total }) => (
+                  <tr key={id}>
+                    <td className="border border-zinc-300 p-2 font-semibold text-zinc-800">{label}</td>
+                    <td className="border border-zinc-300 p-2 text-right font-mono">{formatCell(row.exw)}</td>
+                    <td className="border border-zinc-300 p-2 text-right font-mono">{formatCell(row.freight)}</td>
+                    <td className="border border-zinc-300 p-2 text-right font-mono">{formatCell(row.fob)}</td>
+                    <td className="border border-zinc-300 p-2 text-right font-mono">{formatCell(row.other)}</td>
+                    <td className="border border-zinc-300 p-2 text-right font-mono font-bold">{formatCurrency(total, currency)}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={6} className="border border-zinc-300 p-4 text-center text-zinc-400 italic">
+                    No charges entered
+                  </td>
+                </tr>
+              )}
+              <tr className="bg-zinc-900 text-white font-bold">
+                <td colSpan={5} className="border border-zinc-900 p-2.5 text-right uppercase tracking-wide text-[10px]">
+                  Grand Total
+                </td>
+                <td className="border border-zinc-900 p-2.5 text-right font-mono text-xs">
+                  {formatCurrency(totals.grandTotal, currency)}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        )}
       </section>
 
       {/* Terms */}

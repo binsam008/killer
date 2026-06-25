@@ -10,7 +10,11 @@ export default function DataInputTab({
   agentData,
   setAgentData,
   customerData,
-  setCustomerData
+  setCustomerData,
+  agents = [],
+  setAgents,
+  selectedAgentId,
+  setSelectedAgentId
 }) {
   // Input handlers
   const handleQuotationChange = (field, val) => {
@@ -142,7 +146,76 @@ export default function DataInputTab({
               <option value="INR">INR (₹) - Indian Rupee</option>
             </select>
           </div>
+
+          {/* Form Group: Logo Upload */}
+          <div className="mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-800/80 flex flex-col gap-1.5">
+            <label className="text-[10px] font-bold tracking-wider text-zinc-500 dark:text-zinc-400 uppercase flex items-center justify-between">
+              <span>Company Logo</span>
+              {quotationInfo.logo && (
+                <button
+                  type="button"
+                  onClick={() => handleQuotationChange('logo', '')}
+                  className="text-[9px] text-red-500 hover:text-red-600 font-bold transition-colors cursor-pointer"
+                >
+                  Remove
+                </button>
+              )}
+            </label>
+            {quotationInfo.logo ? (
+              <div className="flex items-center gap-3 p-2 bg-zinc-50 dark:bg-zinc-950/40 rounded-xl border border-zinc-200 dark:border-zinc-800 animate-fade-in">
+                <img
+                  src={quotationInfo.logo}
+                  alt="Quotation Logo"
+                  className="h-10 w-10 object-contain rounded bg-white p-1 border border-zinc-200 dark:border-zinc-800"
+                />
+                <span className="text-[10px] text-zinc-500 truncate max-w-[120px] font-medium">Uploaded Logo</span>
+              </div>
+            ) : (
+              <div className="relative flex items-center justify-center border border-dashed border-zinc-300 dark:border-zinc-700 hover:border-brand-accent rounded-xl p-3 bg-zinc-50/50 dark:bg-zinc-950/20 transition-all cursor-pointer group">
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onload = (event) => {
+                        handleQuotationChange('logo', event.target.result);
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }}
+                />
+                <div className="text-center">
+                  <p className="text-[10px] font-bold text-zinc-500 group-hover:text-brand-accent transition-colors">
+                    Click to upload logo
+                  </p>
+                  <p className="text-[8px] text-zinc-400 mt-0.5">PNG, JPG up to 2MB</p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Form Group: Print Option Toggle */}
+          <div className="mt-4 pt-4 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between">
+            <div className="flex flex-col gap-0.5">
+              <span className="text-[10px] font-bold tracking-wider text-zinc-500 dark:text-zinc-400 uppercase">Summary Only Print</span>
+              <span className="text-[8px] text-zinc-400">Hide pricing breakdown on print</span>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer select-none">
+              <input
+                type="checkbox"
+                className="sr-only peer"
+                checked={!!quotationInfo.printSummaryOnly}
+                onChange={(e) => handleQuotationChange('printSummaryOnly', e.target.checked)}
+              />
+              <div className="w-9 h-5 bg-zinc-200 dark:bg-zinc-800 rounded-full peer peer-focus:ring-2 peer-focus:ring-brand-accent/20 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500 dark:peer-checked:bg-emerald-600"></div>
+            </label>
+          </div>
         </div>
+
+
 
         {/* Right: Section B - Elegant Operations & Shipment Form */}
         <div className="xl:col-span-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800/80 rounded-2xl p-6 shadow-sm space-y-5">
@@ -313,7 +386,88 @@ export default function DataInputTab({
             <span className="text-base font-black text-amber-600 dark:text-amber-400">{formatCurrency(agentTotals.grandTotal, quotationInfo.currency)}</span>
           </div>
         </div>
-        
+
+        {/* Agent Selection and Management Bar */}
+        <div className="px-6 py-4 border-b border-zinc-100 dark:border-zinc-800/60 bg-zinc-50/20 dark:bg-zinc-950/10 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+          <div className="flex flex-wrap gap-2 items-center">
+            {agents.map((agent) => {
+              const isActive = agent.id === selectedAgentId;
+              return (
+                <button
+                  key={agent.id}
+                  type="button"
+                  onClick={() => setSelectedAgentId(agent.id)}
+                  className={`px-3 py-1.5 text-xs font-bold rounded-xl border transition-all cursor-pointer ${
+                    isActive
+                      ? 'bg-amber-500/10 text-amber-600 border-amber-500/30 shadow-sm'
+                      : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200'
+                  }`}
+                >
+                  {agent.name}
+                </button>
+              );
+            })}
+            <button
+              type="button"
+              onClick={() => {
+                const newId = `agent_${Date.now()}`;
+                const newName = `Agent ${agents.length + 1}`;
+                const blankData = {
+                  sea_freight: { exw: '', freight: '', fob: '', other: '' },
+                  air_freight: { exw: '', freight: '', fob: '', other: '' },
+                  road_freight: { exw: '', freight: '', fob: '', other: '' },
+                  customs_clearance: { exw: '', freight: '', fob: '', other: '' },
+                  insurance: { exw: '', freight: '', fob: '', other: '' },
+                  warehousing: { exw: '', freight: '', fob: '', other: '' },
+                  other_charges: { exw: '', freight: '', fob: '', other: '' }
+                };
+                setAgents((prev) => [...prev, { id: newId, name: newName, data: blankData }]);
+                setSelectedAgentId(newId);
+              }}
+              className="px-3 py-1.5 text-xs font-bold rounded-xl border border-dashed border-zinc-300 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 hover:border-amber-500 dark:hover:border-amber-500 hover:text-amber-600 dark:hover:text-amber-500 transition-all cursor-pointer"
+            >
+              + Add Agent
+            </button>
+          </div>
+
+          {/* Active Agent Actions (Rename / Delete) */}
+          <div className="flex gap-2 items-center w-full sm:w-auto">
+            <div className="flex items-center gap-1.5 w-full sm:w-auto">
+              <label className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase whitespace-nowrap">Rename:</label>
+              <input
+                type="text"
+                className="px-2.5 py-1 text-xs border border-zinc-200 dark:border-zinc-800 rounded-lg bg-white dark:bg-zinc-950 text-zinc-800 dark:text-zinc-200 focus:outline-none focus:border-amber-500 transition-all w-full sm:w-40 font-semibold"
+                value={agents.find((a) => a.id === selectedAgentId)?.name || ''}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setAgents((prev) =>
+                    prev.map((agent) =>
+                      agent.id === selectedAgentId ? { ...agent, name: val } : agent
+                    )
+                  );
+                }}
+              />
+            </div>
+            {agents.length > 1 && (
+              <button
+                type="button"
+                onClick={() => {
+                  const activeIndex = agents.findIndex((a) => a.id === selectedAgentId);
+                  const remainingAgents = agents.filter((a) => a.id !== selectedAgentId);
+                  setAgents(remainingAgents);
+                  // fallback to the nearest agent
+                  const nextActiveIndex = activeIndex > 0 ? activeIndex - 1 : 0;
+                  setSelectedAgentId(remainingAgents[nextActiveIndex].id);
+                }}
+                className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg border border-transparent hover:border-red-200 transition-all cursor-pointer shrink-0"
+                title="Delete Active Agent"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-trash-2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+              </button>
+            )}
+          </div>
+        </div>
+
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
